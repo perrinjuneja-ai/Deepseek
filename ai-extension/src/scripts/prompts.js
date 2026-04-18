@@ -185,6 +185,150 @@ export const DEFAULT_PROMPTS = {
 
     Tone:
     - Professional, executable, structured.
+  `,
+
+  /**
+   * Playwright TypeScript Page Object Model (No Test Class)
+   */
+  PLAYWRIGHT_TYPESCRIPT_PAGE_ONLY: `
+    Instructions:
+    - Generate ONLY a Playwright TypeScript Page Object Model (no test code).
+    - Use async/await pattern throughout.
+    - Include JSDoc comments for methods & class.
+    - Use Playwright 1.40+ compatible imports from '@playwright/test'.
+    - Use meaningful method names with camelCase convention.
+    - Do NOT include test cases or explanations.
+
+    Context:
+    DOM:
+    \`\`\`html
+    \${domContent}
+    \`\`\`
+
+    Example:
+    \`\`\`typescript
+    import { Page, Locator } from '@playwright/test';
+
+    /**
+     * Page Object Model for Component Page
+     */
+    export class ComponentPage {
+        readonly page: Page;
+
+        constructor(page: Page) {
+            this.page = page;
+        }
+
+        /**
+         * Add methods as per the DOM
+         */
+        async clickButton() {
+            // Implementation here
+        }
+    }
+    \`\`\`
+
+    Persona:
+    - Audience: Automation engineer focusing on maintainable Page Object Model with Playwright.
+
+    Output Format:
+    - A single TypeScript class inside a \`\`\`typescript\`\`\` block.
+
+    Tone:
+    - Clean, maintainable, modern async/await pattern.
+  `,
+
+  /**
+   * Playwright TypeScript Page Object with Test Cases
+   */
+  PLAYWRIGHT_TYPESCRIPT_WITH_TESTS: `
+    Instructions:
+    - Generate BOTH:
+      1. A Playwright TypeScript Page Object Model.
+      2. Test spec file(s) using Playwright testing syntax.
+    - Use async/await pattern throughout.
+    - Include proper JSDoc comments.
+    - Use Playwright 1.40+ compatible imports from '@playwright/test'.
+    - Tests should use expect() assertions from '@playwright/test'.
+    - Create realistic test cases based on the DOM provided.
+    - Use South India realistic dataset (names, addresses, pin codes, mobile numbers).
+
+    Context:
+    DOM:
+    \`\`\`html
+    \${domContent}
+    \`\`\`
+    URL: \${pageUrl}
+
+    Example:
+    \`\`\`typescript
+    import { Page, Locator } from '@playwright/test';
+
+    /**
+     * Page Object Model for Login Page
+     */
+    export class LoginPage {
+        readonly page: Page;
+        readonly usernameField: Locator;
+        readonly passwordField: Locator;
+        readonly loginButton: Locator;
+
+        constructor(page: Page) {
+            this.page = page;
+            this.usernameField = page.locator('input[id="username"]');
+            this.passwordField = page.locator('input[id="password"]');
+            this.loginButton = page.locator('button:has-text("Login")');
+        }
+
+        async goto() {
+            await this.page.goto('\${pageUrl}');
+        }
+
+        async fillUsername(username: string) {
+            await this.usernameField.fill(username);
+        }
+
+        async fillPassword(password: string) {
+            await this.passwordField.fill(password);
+        }
+
+        async clickLogin() {
+            await this.loginButton.click();
+        }
+    }
+    \`\`\`
+
+    \`\`\`typescript
+    import { test, expect, Page } from '@playwright/test';
+    import { LoginPage } from './pages/LoginPage';
+
+    test.describe('Login Tests', () => {
+        let loginPage: LoginPage;
+        let page: Page;
+
+        test.beforeEach(async ({ page: testPage }) => {
+            page = testPage;
+            loginPage = new LoginPage(page);
+            await loginPage.goto();
+        });
+
+        test('should login with valid credentials', async () => {
+            await loginPage.fillUsername('admin');
+            await loginPage.fillPassword('admin123');
+            await loginPage.clickLogin();
+            await expect(page).toHaveURL(/.*dashboard/);
+        });
+    });
+    \`\`\`
+
+    Persona:
+    - Audience: QA engineers working with Playwright & TypeScript.
+
+    Output Format:
+    - TypeScript Page Object in \`\`\`typescript\`\`\` block + Test specs in \`\`\`typescript\`\`\` block.
+
+    Tone:
+    - Professional, modern, async/await focused.
   `
 };
 
@@ -216,4 +360,6 @@ export const CODE_GENERATOR_TYPES = {
   SELENIUM_JAVA_PAGE_ONLY: 'Selenium-Java-Page-Only',
   CUCUMBER_ONLY: 'Cucumber-Only',
   CUCUMBER_WITH_SELENIUM_JAVA_STEPS: 'Cucumber-With-Selenium-Java-Steps',
+  PLAYWRIGHT_TYPESCRIPT_PAGE_ONLY: 'Playwright-TypeScript-Page-Only',
+  PLAYWRIGHT_TYPESCRIPT_WITH_TESTS: 'Playwright-TypeScript-With-Tests',
 };
